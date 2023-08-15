@@ -10,6 +10,6 @@ object Constants {
 
     var firstOpening = true
 
-    const val BASE_URL = "https://{okiziltas17:Fare210041.}@opensky-network.org/api/"
+    const val BASE_URL = "https://{USERNAME:PASSWORD}@opensky-network.org/api/"
 
 }
