@@ -1,68 +1,134 @@
 package com.example.trialonur.features.screen.home
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import android.os.CountDownTimer
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.trialonur.data.model.SatelliteList
-import com.example.trialonur.features.component.HomeScreenCard
-import com.example.trialonur.features.component.ItemShimmer
-import com.example.trialonur.features.component.SearchBar
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.trialonur.R
+import com.example.trialonur.data.model.States
+import com.example.trialonur.features.component.ExposedDropdownMenuBoxCustom
+import com.example.trialonur.features.component.MapMarker
+import com.example.trialonur.util.Constants.firstOpening
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    onNavigateSecondScreen: (SatelliteList?) -> Unit
+    onNavigateSecondScreen: () -> Unit
 ) {
     val viewState = viewModel.uiState.collectAsState().value
 
     Content(
+        viewModel,
         isLoading = viewState.isLoading,
-        data = viewState.data?.results,
-        detailClick = {
-            onNavigateSecondScreen.invoke(it)
-        }
+        data = viewState.data,
     )
 
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Content(
+    viewModel: HomeViewModel,
     isLoading: Boolean = false,
-    data: List<SatelliteList>?,
-    detailClick: (SatelliteList?) -> Unit
+    data: List<States>?,
 ) {
-    SearchBar(modifier = Modifier.padding(start = 30.dp, end = 30.dp, top = 15.dp),
-        text = "", onTextChange = {}, onClickSearch = {})
 
-    LazyColumn(
-        Modifier.padding(top = 80.dp),
-        contentPadding = PaddingValues(vertical = 10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        if (isLoading) {
-            items(count = 5) {
-                ItemShimmer(modifier = Modifier)
-            }
-        } else {
-            items(items = data ?: listOf()) { item ->
-                HomeScreenCard(
-                    title = item.name,
-                    overview = item.active,
-                    detailClick = { detailClick(item) }
-                )
-            }
-        }
+
+
+    if (viewModel.country.size > 0) {
+        ExposedDropdownMenuBoxCustom(viewModel)
     }
 
+    if (isLoading && firstOpening) {
+
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.flight))
+            LottieAnimation(
+                composition,
+                modifier = Modifier,
+                restartOnPlay = true,
+                alignment = Alignment.Center,
+                iterations = LottieConstants.IterateForever)
+        }
+
+    } else if (data != null) {
+
+        firstOpening = false
+
+        val timer = object : CountDownTimer(10000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {}
+
+            override fun onFinish() {
+                viewModel.getData()
+            }
+        }.start()
+        val latLng = LatLng(
+            data.get(0).latitude.toString().toDouble(),
+            data.get(0).longitude.toString().toDouble()
+        )
+        val cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(
+                latLng,
+                3.5f
+            )
+        }
+        GoogleMap(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(0.dp, 50.dp, 0.dp, 0.dp),
+            cameraPositionState = cameraPositionState,
+            onMapClick = {
+                // get region and update data
+            }
+        ) {
+            data.forEach { state ->
+
+                val coordinates =
+                    LatLng(state.latitude.toString().toDouble(), state.longitude.toString().toDouble())
+                MapMarker(
+                    position = coordinates,
+                    context = LocalContext.current,
+                    iconResourceId = R.drawable.ic_airplane,
+                    title = state.origin_country.toString(),
+                    rotation = state.true_track.toString().toFloat() ?: 0F
+                )
+            }
+
+        }
+    }
 }
+
 
 @Preview(showBackground = true)
 @Composable

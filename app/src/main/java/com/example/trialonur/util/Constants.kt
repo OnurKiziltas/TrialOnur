@@ -3,13 +3,13 @@ package com.example.trialonur.util
 
 
 object Constants {
-    const val TABLE_NAME = "satellite"
-    const val COLUMN_ID = "id"
-    const val COLUMN_COST_PER_LAUNC = "cost_per_launch"
-    const val COLUMN_FIRST_FLIGHT = "first_flight"
-    const val COLUMN_MASS = "mass"
-    const val COLUMN_HEIGHT = "height"
+    const val lamin = "45.5"
+    const val lomin = "43.2"
+    const val lamax = "96.5"
+    const val lomax = "95.5"
 
-    const val IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500/"
+    var firstOpening = true
+
+    const val BASE_URL = "https://{okiziltas:Fare210041.}@opensky-network.org/api/"
 
 }

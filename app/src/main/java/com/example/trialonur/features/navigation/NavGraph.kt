@@ -8,7 +8,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.trialonur.features.screen.home.HomeScreen
-import com.example.trialonur.features.screen.secondscreen.SecondScreen
 import com.example.trialonur.util.Utility.toJson
 
 
@@ -24,16 +23,16 @@ fun NavGraph(startDestination: String = NavScreen.Home.route){
             HomeScreen(
                 hiltViewModel(),
             onNavigateSecondScreen = {
-                navController.navigate(NavScreen.SecondScreen.route.plus("?satelliteList=${it.toJson()}"))
+                navController.navigate(NavScreen.SecondScreen.route.plus("?=${it.toJson()}"))
             })
         }
 
-        composable(NavScreen.SecondScreen.route.plus("?satelliteList={satelliteList}")){
+       /* composable(NavScreen.SecondScreen.route.plus("?={}")){
             SecondScreen(
                 hiltViewModel(),
                 onNavigateHomeScreen = {
                     navController.popBackStack()
                 })
-        }
+        }*/
     }
 }

@@ -3,8 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.trialonur">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
     <application
-        android:name="com.example.trialonur.ExampleComposeApp"
+        android:name="com.example.trialonur.TrialOnurApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -23,6 +26,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBuprUMNaMQTgohlv_2TwF8Ff7bPKtblG4" />
     </application>
+
+
 
 </manifest>

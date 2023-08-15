@@ -1,22 +1,28 @@
 package com.example.trialonur.data.remote
 
-import android.content.Context
 import com.example.trialonur.data.DataState
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import java.lang.reflect.Type
+import retrofit2.Response
 
-open class BaseRemoteDataSource() {
-    protected suspend fun <T> getResult(context : Context,fileName : String,type : Type): Flow<DataState<T>> {
+open class BaseRemoteDataSource {
+    protected suspend fun <T> getResult(call: suspend () -> Response<T>): Flow<DataState<T>> {
         return flow<DataState<T>> {
-
-            val jsonString = context.assets.open(fileName)
-                .bufferedReader()
-                .use { it.readText() }
-
-            val data : T = Gson().fromJson(jsonString, type)
-            emit(DataState.Success(data))
+            val response = call()
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) emit(DataState.Success(body))
+                else {
+                    val apiError: APIError =
+                        Gson().fromJson(response.errorBody()?.charStream(), APIError::class.java)
+                    emit(DataState.Error(apiError))
+                }
+            } else {
+                val apiError: APIError =
+                    Gson().fromJson(response.errorBody()?.charStream(), APIError::class.java)
+                emit(DataState.Error(apiError))
+            }
 
         }
             .catch {
@@ -26,4 +32,6 @@ open class BaseRemoteDataSource() {
             .flowOn(Dispatchers.IO)
     }
 }
+
+
 

@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class ExampleComposeApp : Application() {
+class TrialOnurApp : Application() {
 
     val isDark = mutableStateOf(false)
 
