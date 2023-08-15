@@ -11,7 +11,6 @@ import com.example.trialonur.features.viewstate.IViewEvent
 import com.example.trialonur.features.viewstate.ObjectViewState
 import com.example.trialonur.util.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

@@ -33,7 +33,7 @@ object RemoteDataModule {
     }
 
     @Provides
-    fun provideRickAndMortyApiUrl(): String = Constants.BASE_URL
+    fun provideApiUrl(): String = Constants.BASE_URL
 
     @Provides
     @Singleton
