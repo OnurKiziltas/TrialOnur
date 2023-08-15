@@ -34,14 +34,12 @@ class HomeViewModel @Inject constructor(private val flightRepository: FlightRepo
                         it.data.states?.let {
                             FlightStatesResultMapper.responseToFlightStatesResult(it).forEach{
                                 states.add(it)
+                                if(country.contains(it.origin_country).not()){
+                                    country.add(it.origin_country)
+                                }
                             }
                         }
                         setState { currentState.copy(data = states, isLoading = false) }
-                        it.data.states?.forEach {
-                                if(country.contains(it.get(2)).not()){
-                                    country.add(it.get(2))
-                            }
-                        }
                     }
                     is DataState.Error -> {
                         setState { currentState.copy(isLoading = false) }

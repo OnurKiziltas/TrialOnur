@@ -58,15 +58,11 @@ fun Content(
     isLoading: Boolean = false,
     data: List<States>?,
 ) {
-
-
-
     if (viewModel.country.size > 0) {
         ExposedDropdownMenuBoxCustom(viewModel)
     }
 
     if (isLoading && firstOpening) {
-
 
         Column(
             modifier = Modifier.fillMaxSize(),
